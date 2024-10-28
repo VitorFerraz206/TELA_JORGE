@@ -1,0 +1,11 @@
+{
+  "name": "Tela",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "npx react-native start"
+  },
+  "dependencies": {
+    "react-native": "0.76.0"
+  }
+}

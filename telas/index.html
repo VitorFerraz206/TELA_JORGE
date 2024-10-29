@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro e Login</title>
+    <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-firestore.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            max-width: 400px;
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="auth-container">
+        <h2>Cadastro</h2>
+        <div class="input-group">
+            <input type="text" id="fullName" placeholder="Nome Completo" required>
+        </div>
+        <div class="input-group">
+            <input type="text" id="birthDate" placeholder="Data de Nascimento" required>
+        </div>
+        <div class="input-group">
+            <input type="email" id="email" placeholder="E-mail" required>
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Senha" required>
+        </div>
+        <div class="input-group">
+            <input type="password" id="confirmPassword" placeholder="Confirmar Senha" required>
+        </div>
+        <button id="register-button">Criar conta</button>
+        <div class="message" id="register-message"></div>
+        
+        <h2>Login</h2>
+        <div class="input-group">
+            <input type="email" id="login-email" placeholder="E-mail" required>
+        </div>
+        <div class="input-group">
+            <input type="password" id="login-password" placeholder="Senha" required>
+        </div>
+        <button id="login-button">Logar</button>
+        <div class="message" id="login-message"></div>
+    </div>
+
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAH6MzxfkOP6H2Ta14oMvqz4ZJjU44SLr0",
+            authDomain: "tela-jorge.firebaseapp.com",
+            projectId: "tela-jorge",
+            storageBucket: "tela-jorge.appspot.com",
+            messagingSenderId: "236406727105",
+            appId: "1:236406727105:web:cbe5fe189488bb689e8f40",
+            measurementId: "G-C4XCSMH6X6"
+        };
+
+        // Inicializando o Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Função de cadastro
+        document.getElementById('register-button').addEventListener('click', async () => {
+            const fullName = document.getElementById('fullName').value;
+            const birthDate = document.getElementById('birthDate').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const messageContainer = document.getElementById('register-message');
+
+            if (password !== confirmPassword) {
+                messageContainer.innerText = "As senhas não coincidem.";
+                return;
+            }
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                await db.collection("users").doc(user.uid).set({
+                    fullName: fullName,
+                    birthDate: birthDate,
+                    email: email,
+                });
+
+                messageContainer.innerText = "Usuário cadastrado com sucesso!";
+            } catch (error) {
+                messageContainer.innerText = "Erro: " + error.message;
+            }
+        });
+
+        // Função de login
+        document.getElementById('login-button').addEventListener('click', async () => {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const messageContainer = document.getElementById('login-message');
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                messageContainer.innerText = "Usuário logado com sucesso!";
+                // Redirecionar para outra página ou executar outra ação
+            } catch (error) {
+                messageContainer.innerText = "Erro: " + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
